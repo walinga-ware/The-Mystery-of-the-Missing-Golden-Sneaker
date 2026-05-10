@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Mystery of the Missing Golden Sneaker</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf6ec;
+    --warm-white: #fefaf4;
+    --brown: #5c3d2e;
+    --amber: #c8842a;
+    --amber-light: #e8a84a;
+    --sage: #7a9e7e;
+    --blush: #e8c4b8;
+    --text: #3a2a1e;
+    --text-light: #7a6a5e;
+    --shadow: rgba(92,61,46,0.12);
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--cream);
+    font-family: 'Lora', Georgia, serif;
+    color: var(--text);
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(200,132,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(122,158,126,0.10) 0%, transparent 60%);
+    min-height: 100vh;
+  }
+
+  /* ── COVER SCREEN ── */
+  #cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .cover-ornament {
+    font-size: 2.8rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(200,132,42,0.3));
+  }
+
+  .cover-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 8vw, 3.2rem);
+    font-weight: 700;
+    color: var(--brown);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .cover-subtitle {
+    font-style: italic;
+    color: var(--text-light);
+    font-size: 1.05rem;
+    max-width: 28ch;
+    line-height: 1.7;
+  }
+
+  .cover-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), transparent);
+    border: none;
+  }
+
+  .btn-start {
+    margin-top: 0.5rem;
+    padding: 0.9rem 2.5rem;
+    background: var(--brown);
+    color: var(--cream);
+    border: none;
+    border-radius: 60px;
+    font-family: 'Lora', serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(92,61,46,0.25);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .btn-start:hover { background: var(--amber); box-shadow: 0 6px 24px rgba(200,132,42,0.35); transform: translateY(-1px); }
+  .btn-start:active { transform: translateY(0); }
+
+  /* ── GAME SCREEN ── */
+  #game { display: none; }
+
+  .page-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 5rem;
+  }
+
+  /* breadcrumb / progress */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0 0.5rem;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .progress-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    flex-shrink: 0;
+  }
+
+  /* scene card */
+  .scene-card {
+    background: var(--warm-white);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px var(--shadow), 0 2px 8px rgba(0,0,0,0.04);
+    margin-top: 0.75rem;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* image area */
+  .scene-image-wrap {
+    width: 100%;
+    background: linear-gradient(135deg, #f0e6d8 0%, #e8d5c0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scene-image-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+
+
+  /* text body */
+  .scene-body {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+
+  .scene-chapter {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+    font-family: 'Lora', serif;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .scene-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--brown);
+    line-height: 1.25;
+    margin-bottom: 0.9rem;
+  }
+
+  .scene-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .scene-text p + p { margin-top: 0.85rem; }
+
+  /* choices */
+  .choices-wrap {
+    padding: 0 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .choices-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    margin-bottom: 0.1rem;
+    padding-left: 0.1rem;
+  }
+
+  .choice-btn {
+    width: 100%;
+    padding: 0.9rem 1.1rem;
+    background: var(--cream);
+    border: 1.5px solid rgba(92,61,46,0.14);
+    border-radius: 12px;
+    text-align: left;
+    font-family: 'Lora', serif;
+    font-size: 0.97rem;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+    line-height: 1.45;
+  }
+  .choice-btn:hover {
+    background: var(--warm-white);
+    border-color: var(--amber-light);
+    box-shadow: 0 3px 14px rgba(200,132,42,0.15);
+    transform: translateX(3px);
+  }
+  .choice-btn:active { transform: translateX(1px); }
+
+  .choice-arrow {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--amber-light);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+    font-style: normal;
+  }
+
+  /* ending card */
+  .ending-card {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f7ede0, #efdfd0);
+    border-radius: 16px;
+    text-align: center;
+    animation: fadeUp 0.5s ease both;
+  }
+  .ending-icon { font-size: 2.5rem; margin-bottom: 0.6rem; }
+  .ending-msg {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--brown);
+    font-style: italic;
+    margin-bottom: 1.2rem;
+  }
+
+  .btn-restart {
+    padding: 0.75rem 2rem;
+    background: var(--brown);
+    color: var(--cream);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Lora', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.12s;
+  }
+  .btn-restart:hover { background: var(--amber); transform: translateY(-1px); }
+
+
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<div id="cover">
+  <div class="cover-ornament">👟✨</div>
+  <h1 class="cover-title">The Mystery of the Missing Golden Sneaker</h1>
+  <hr class="cover-divider">
+  <p class="cover-subtitle">A thrilling adventure starring YOU: Wordle expert, Hiking enthusiast, Mother of five, and Granny of 1</p>
+  <button class="btn-start" onclick="startGame()">Begin the Mystery →</button>
+</div>
+
+<!-- ══════════ GAME ══════════ -->
+<div id="game">
+  <div class="page-wrap">
+    <div class="progress-bar">
+      <div class="progress-dot"></div>
+      <span id="progress-text">Chapter 1</span>
+    </div>
+    <div id="scene-container"></div>
+  </div>
+</div>
+
+
+
+<script>
+// ══════════════════════════════════════════════
+//  DEFAULT STORY DATA
+// ══════════════════════════════════════════════
+const DEFAULT_STORY = [
+  {
+    id: "start",
+    title: "A Strange Feeling",
+    chapter: "Page 1",
+    text: "It was a bright Saturday morning when you woke up with a strange feeling.\n\nSomething important was going to happen today.\n\nYou sat down in your usual spot to complete today's Wordle.\n\n Score: 3/6. Not bad. Almost immediately, messages rolled in: Matthew got it in 4. Stu got it in 2 (lucky guess).\n\ Then your phone buzzed again! \"Who could that be?\", you wonder.",
+    svg: "",
+    choices: [
+      { label: "Check your notifications 📱", next: "start2" }
+    ]
+  },
+  {
+    id: "start2",
+    title: "A Mysterious Text",
+    chapter: "Page 2",
+    text: "A mysterious text from an unknown number:\n\n\"The Golden Sneaker has vanished. Only YOU can find it. Follow the clues before sunset.\"\n\nAttached was a picture of a tiny gold shoe charm, and underneath: \"Your first clue lies where tiny footsteps wander.\"\n\nYou gasp dramatically. Could this be… a quest?",
+    svg: "",
+    choices: [
+      { label: "Ask Eliana for help first 👧🏽", next: "eliana" },
+      { label: "Head straight to the shoe store 👟", next: "store" },
+      { label: "Call your dad and ask him to join you hiking 🥾", next: "trail" }
+    ]
+  },
+  {
+    id: "eliana",
+    title: "Eliana's Clue",
+    chapter: "Page 3",
+    text: "You knock on the basement door, and little Eli immediately rushes upstairs.\n\n\"Granna! Treasure hunt!\"\n\nShe leads you to her toy kitchen where a crayon drawing waits on the table. It shows: a lake, a shoe, and a strange five-letter word:\n\nT _ A I L\n\n\"Hmmm…\" you say.\n\n\"A Wordle clue!\"\n\nYou fill in the missing letter. TRAIL.\n\nSuddenly, Eliana points dramatically toward the backyard. Tucked into the screen door is another clue:\n\n\"The path ahead forks in two.\"",
+    svg: "",
+    choices: [
+      { label: "Go hiking with your dad 🥾", next: "trail" },
+      { label: "Head to the shoe store to investigate 👟", next: "store" }
+    ]
+  },
+  {
+    id: "store",
+    title: "The Shoe Store Mystery",
+    chapter: "Page 4",
+    text: "You arrive at your store. Everything seems normal… except for one thing.\n\nSomeone has rearranged the entire wall display so that every shoe points LEFT.\n\n\"Uh oh,\" says one employee. \"That's never good.\"\n\nYou inspect the register and discover a sticky note:\n\n\"Only the best managers know which path FITS.\"\n\nBelow are two shoeboxes:\n\nBox A says: \"Comfort\"\nBox B says: \"Adventure\"",
+    svg: "",
+    choices: [
+      { label: "Open the Comfort box 🧸", next: "end_nap" },
+      { label: "Open the Adventure box 🎲", next: "end_milk" }
+    ]
+  },
+  {
+    id: "trail",
+    title: "The Forest Trail",
+    chapter: "Page 5",
+    text: "You meet your dad at the hiking trail.\n\n\"This reminds me of a scavenger hunt,\" he says.\n\nTogether, you walk through the trees, laughing and talking. Eventually you discover a wooden sign that reads:\n\n\"Family is the key.\"\n\nBelow it are five carved initials: M • E • J • D • S\n\nYou smile immediately. Your children.\n\nBehind the sign is a hidden compartment containing: a granola bar, a tiny plastic dinosaur, and another clue:\n\n\"The final answer is where all paths come together.\"",
+    svg: "",
+    choices: [
+      { label: "Go home and gather everyone together 🏠", next: "end_golden" },
+      { label: "Keep hiking to search for more clues 🦆", next: "end_goose" }
+    ]
+  },
+
+  // ENDINGS
+  {
+    id: "end_nap",
+    title: "The Unexpected Nap Ending",
+    chapter: "The End",
+    text: "You open the Comfort box.\n\nInside is… a very soft pair of beige orthopedic slippers.\n\nA second note reads: \"You chose COMFORT. Please enjoy a relaxing afternoon.\"\n\nHonestly? The slippers are incredibly comfortable.\n\nYou spend the rest of the day drinking tea, watching <i>The Smurfs</i>, and accidentally dozing off around 4:30 PM.\n\nNot a terrible ending. Just… extremely cozy.",
+    svg: "",
+    choices: [],
+    ending: "The Golden Sneaker mystery remains unsolved. The slippers were worth it. 🧦"
+  },
+  {
+    id: "end_milk",
+    title: "The Great Milk Disaster",
+    chapter: "The End",
+    text: "You open the Adventure box.\n\nImmediately, a spring-loaded sneaker launches into the air. It flies across the store and knocks over a carton of milk that someone left in the back room.\n\nSPLASH.\n\nMilk everywhere. One employee gasps. Another quietly says: \"This is why we label things.\"\n\nYou spend the next hour cleaning sticky milk off the floor while wearing squeaky shoes.\n\nThe Golden Sneaker mystery remains unsolved.\n\nAt least nobody cried.",
+    svg: "",
+    choices: [],
+    ending: "Adventure chosen. Milk spilled. Lesson learned. 🥛"
+  },
+  {
+    id: "end_golden",
+    title: "The Golden Sneaker Ending ✨",
+    chapter: "The End",
+    text: "You return home. The house is strangely quiet. Too quiet.\n\nThen — SURPRISE!!!\n\nEveryone jumps out at once. Matthew. Esther. Joshua. David. Sarah. Eliana. Stu. Even Grandpapa somehow made it inside before you did.\n\nThere are balloons everywhere. A banner reads: \"HAPPY MOTHER'S DAY!\"\n\nOn the counter there's a handwritten note: \"No matter where the trail goes, we always end up back with you.\"\n\nThen Eliana runs over and says, \"Granny, look!\" In her hand is her favourite doll, wearing a pair of golden sneakers. Mystery solved.\n\nEveryone gathers together for a group hug.\n\nYou smile. It's perfect.",
+    svg: "<img src=\"Gemini_Generated_Image_wql6hdwql6hdwql6.png\"></img>",
+    choices: [],
+    ending: "Mystery solved. Family found. The perfect ending to an unforgettable day. 🥇👟"
+  },
+  {
+    id: "end_goose",
+    title: "The Goose Was Probably Involved Ending",
+    chapter: "The End",
+    text: "You continue hiking for three more hours.\n\nYou discover: two squirrels, one cool rock, and a suspiciously confident goose.\n\nBut no Golden Sneaker.\n\nEventually your dad says: \"Well… at least we got some good exercise.\"\n\nYou stop for sandwiches on the way home.\n\nThe mystery remains unsolved forever.\n\nOr until someone checks the junk drawer.",
+    svg: "",
+    choices: [],
+    ending: "No sneaker found. The goose knows something. 🪿"
+  }
+];
+
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let story = JSON.parse(JSON.stringify(DEFAULT_STORY));
+
+function getPage(id) {
+  return story.find(p => p.id === id);
+}
+
+// ══════════════════════════════════════════════
+//  COVER → GAME
+// ══════════════════════════════════════════════
+function startGame() {
+  document.getElementById('cover').style.display = 'none';
+  document.getElementById('game').style.display = 'block';
+  showPage('start');
+}
+
+// ══════════════════════════════════════════════
+//  RENDER PAGE
+// ══════════════════════════════════════════════
+function showPage(pageId) {
+  const page = getPage(pageId);
+  if (!page) return;
+
+  const container = document.getElementById('scene-container');
+  document.getElementById('progress-text').textContent = page.chapter || '';
+
+  // Build paragraphs
+  const paras = page.text.split('\n').filter(Boolean)
+    .map(p => `<p>${p}</p>`).join('');
+
+  // Image: use svg field if present, else a simple placeholder
+  const imageHTML = page.svg
+    ? `<div class="scene-image-wrap">${page.svg}</div>`
+    : `<div class="scene-image-wrap"><svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f9e8d0"/><stop offset="100%" stop-color="#fdf6ec"/></linearGradient></defs><rect width="800" height="450" fill="url(#bg)"/><text x="400" y="230" text-anchor="middle" font-family="Georgia,serif" font-size="22" fill="#7a6a5e" opacity="0.6">✦ ${page.title} ✦</text></svg></div>`;
+
+  const sceneCard = page.svg
+    ? `<div class="scene-card">
+      <div class="scene-body">
+        <div class="scene-chapter">${page.chapter || ''}</div>
+        <div class="scene-title">${page.title}</div>
+        <div class="scene-text">${paras}</div>
+      </div>
+      ${imageHTML}
+    </div>`
+    : `<div class="scene-card">
+      <div class="scene-body">
+        <div class="scene-chapter">${page.chapter || ''}</div>
+        <div class="scene-title">${page.title}</div>
+        <div class="scene-text">${paras}</div>
+      </div>
+    </div>`;
+
+  // Choices or ending
+  let choicesHTML = '';
+  if (page.choices && page.choices.length > 0) {
+    const btns = page.choices.map(c => `
+      <button class="choice-btn" onclick="showPage('${c.next}')">
+        <span class="choice-arrow">›</span>
+        ${c.label}
+      </button>
+    `).join('');
+    choicesHTML = `
+      <div class="choices-wrap">
+        <div class="choices-label"></div>
+        ${btns}
+      </div>`;
+  } else {
+    choicesHTML = `
+      <div style="padding:0 1.25rem 1.25rem">
+        <div class="ending-card">
+          <div class="ending-icon">🌻</div>
+          <div class="ending-msg">${page.ending || 'The End.'}</div>
+          <button class="btn-restart" onclick="showPage('start')">Start Over ↺</button>
+        </div>
+      </div>`;
+  }
+
+  container.innerHTML = `
+    ${sceneCard}
+    ${choicesHTML}
+  `;
+
+  // Fix SVG sizing
+  const svg = container.querySelector('.scene-image-wrap svg');
+  if (svg) { svg.style.width = '100%'; svg.style.height = '100%'; svg.style.display = 'block'; }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
